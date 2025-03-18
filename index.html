@@ -47,6 +47,9 @@
 			<section>
 				<section>
 					<h1>Data Oriented Programming</h1>
+					<aside class="notes">
+						This is the most significant change to Java since Generics v5 and Lambdas v8.
+					</aside>
 				</section>
 				<section>
 					<h1>Sealed interface</h1>
@@ -56,6 +59,10 @@
 									}
 								</code>
 							</pre>
+							<aside class="notes">
+								The new sealed interface stipulates which classes/records can implement it.
+								The compiler can now enumerate over these to ensure compliance
+							</aside>
 				</section>
 				<section>
 					<h1>Sealed Classes</h1>
@@ -68,9 +75,16 @@
 								}
 							</code>
 						</pre>
+						<aside class="notes">
+							The final keyword is needed with the class to seal the hierarchy.
+							float interest is known as a typed component.
+
+							A record does not calculate any internal state, important for smart switch destructuring.  Hence components are the identity of the record.
+							Can serialize more efficiently, by just sending float  with little metadata.  
+						</aside>
 				</section>
 				<section>
-					<h1>Smart Switch</h1>
+					<h1>Smart Switch Expression</h1>
 					<pre>
 							<code class="hljs java" data-trim data-noescape>
 								return switch (loan) {
@@ -79,6 +93,15 @@
 								};
 							</code>
 						</pre>
+						<aside class="notes">
+							Classes cannot be destructed as language currently does not know which fields to preserve to preserve the state of the class
+							Records can be destructed.  They are just data carrier types.  
+							Records also ensur constructor validation code is called during deserialization.  
+							This does not happen with classes which is a security concern. 
+
+							More elegant and exhaustive then if(load instanceof UnsecuredLoan){var usl = (UnsecuredLoad) loan;}
+							Forget an if then compiler cannot help: with Smart Switch Expression it can.
+						</aside>
 				</section>
 
 			</section>
@@ -127,6 +150,11 @@
 					<p>Give 360 degree visibility from cockpit</p>
 					<p>Fit with better weapons, missiles</p>
 					<p>Fit air brakes</p>
+					<aside class="notes">
+						The pilots expressed distain at being shot down by more agile MIG.  
+						Missing waeponry during close encounters.  Unable to shake the more agile MIG.
+						They were unable to see MIG when they approched from behind.
+					</aside>
 				</section>
 
 				<section>
@@ -151,6 +179,9 @@
 			<section>
 				<section>
 					<h1>Docker and Jib</h1>
+					<aside class="notes">
+						I do not discuss buildpacks here due the more image dependicies required and complexity they introduce
+					</aside>
 				</section>
 				<section>
 					<p>Simple Docker file</p>
@@ -160,6 +191,9 @@
 						COPY target/simplecode-0.0.1-SNAPSHOT.jar /opt/app.jar
 						ENTRYPOINT ["java", "-jar", "/opt/app.jar"]
 					</code>
+					<aside class="notes">
+						This assumes the java jar file has been prebuilt
+					</aside>
 				</pre>
 				</section>
 				<section>
@@ -186,6 +220,13 @@
 						ENTRYPOINT ["java","-XX:+UseParallelGC","-XX:MaxRAMPercentage=75","org.springframework.boot.loader.launch.JarLauncher"]
 					</code>
 				</pre>
+				<aside class="notes">
+					The maven layer relies on developer external cache to speed up build.  If the cache is not up to date then issues occur.
+					Dependencies in maven repository change less frequently than source code, hence the decision.
+
+					The builder layer takes the jar from maven layer and extracts the artifacts.
+					The final layer takes extracted artifacts, copies them and runs jvm with sensible parameters 
+				</aside>
 				</section>
 				<section>
 					<p>Docker file using JDeps/JLink to remove unwanted modules from JVM and thus reducing the security threat surface and size of JVM</p>
@@ -220,6 +261,10 @@
 						COPY --from=build /opt/app/target/simplecode-0.0.1-SNAPSHOT.jar /opt/app.jar
 						ENTRYPOINT ["java","-jar","/opt/app.jar"]
 					</code>
+					<aside class="notes">
+						jdeps extracts all the JVM modules the jar file depends on
+						jlink builds a JVM using the dependant modules found by jdeps
+					</aside>
 				</pre>
 				</section>
 				
@@ -264,6 +309,9 @@
 							mvn compile com.google.cloud.tools:jib-maven-plugin:3.4.5:dockerBuild
 						</code>
 					</pre>
+					<aside class="notes">
+						The image built by JIB follows all the best practices which we were writing by hand earlier
+					</aside>
 				</section>
 				<section>
 					<p>Run maven and below command to register image on DockerHub without need for Local Docker Daemon, perfect for CI/CD environments</p>
@@ -292,6 +340,7 @@
 		// - https://revealjs.com/config/
 		Reveal.initialize({
 			hash: true,
+			showNotes: true,
 
 			// Learn about plugins: https://revealjs.com/plugins/
 			plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
